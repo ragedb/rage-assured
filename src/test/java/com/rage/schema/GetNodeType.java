@@ -1,33 +1,12 @@
 package com.rage.schema;
 
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import com.rage.BaseTest;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.hasItem;
 
-public class GetNodeType {
-
-    private static RequestSpecification requestSpec;
-
-    @BeforeAll
-    public static void createRequestSpecification() {
-
-        requestSpec = new RequestSpecBuilder().
-                setBaseUri("http://localhost").
-                setPort(7243).
-                build();
-    }
-
-    @BeforeEach
-    public void clearGraph() {
-
-        given().spec(requestSpec).delete("/db/rage/schema").then().statusCode(202);
-    }
+public class GetNodeType extends BaseTest {
 
     @Test
     public void requestNodeTypeFromEmptyGraph() {
