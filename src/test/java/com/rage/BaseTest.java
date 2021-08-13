@@ -21,7 +21,6 @@ public class BaseTest {
 
     @BeforeEach
     public void clearGraph() {
-
         given().spec(requestSpec).delete("/db/rage/schema").then().statusCode(202);
     }
 

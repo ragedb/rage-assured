@@ -1,17 +1,17 @@
 package com.rage.nodes;
 
 import com.rage.BaseTest;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
-import io.restassured.http.ContentType;
-
-public class GetAllNodes extends BaseTest {
-
+public class GetANodeById extends BaseTest {
+    
     @Test
-    public void GetAllNodesOnEmptyGraph() {
+    public void GetANodeByIdOnEmptyGraph() {
         given().
                 spec(requestSpec).
                 when().
@@ -38,12 +38,36 @@ public class GetAllNodes extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
+                post("/db/rage/schema/nodes/Person").
+                then().
+                assertThat().
+                statusCode(201);
+        given().
+                spec(requestSpec).
+                when().
+                post("/db/rage/schema/nodes/Person/properties/name/string").
+                then().
+                assertThat().
+                statusCode(201);
+
+        given().
+                spec(requestSpec).
+                when().
+                post("/db/rage/schema/nodes/Person/properties/age/integer").
+                then().
+                assertThat().
+                statusCode(201);
+
+        given().
+                spec(requestSpec).
+                when().
                 body("{ \"name\" : \"max\", \"age\" : 42 }").with().contentType(ContentType.JSON).
                 post("/db/rage/node/User/Max").
                 then().
                 assertThat().
                 statusCode(201).
                 contentType(equalTo("application/json")).
+                body("id", is(1027)).
                 body("type", is("User")).
                 body("key", is("Max")).
                 body("properties.age", is(42)).
@@ -53,12 +77,13 @@ public class GetAllNodes extends BaseTest {
                 spec(requestSpec).
                 when().
                 body("{ \"name\" : \"helene\", \"age\" : 41 }").with().contentType(ContentType.JSON).
-                post("/db/rage/node/User/Helene").
+                post("/db/rage/node/Person/Helene").
                 then().
                 assertThat().
                 statusCode(201).
                 contentType(equalTo("application/json")).
-                body("type", is("User")).
+                body("id", is(2050)).
+                body("type", is("Person")).
                 body("key", is("Helene")).
                 body("properties.age", is(41)).
                 body("properties.name", is("helene"));
@@ -66,15 +91,27 @@ public class GetAllNodes extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                get("/db/rage/nodes").
+                get("/db/rage/node/2050").
                 then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("size()", equalTo(2)).
-                body("[0].type", is("User")).
-                body("[0].key", is("Helene")).
-                body("[1].properties.age", is(42)).
-                body("[1].properties.name", is("max"));
+                body("type", is("Person")).
+                body("key", is("Helene")).
+                body("properties.age", is(41)).
+                body("properties.name", is("helene"));
+
+        given().
+                spec(requestSpec).
+                when().
+                get("/db/rage/node/1027").
+                then().
+                assertThat().
+                statusCode(200).
+                contentType(equalTo("application/json")).
+                body("type", is("User")).
+                body("key", is("Max")).
+                body("properties.age", is(42)).
+                body("properties.name", is("max"));
     }
 }
