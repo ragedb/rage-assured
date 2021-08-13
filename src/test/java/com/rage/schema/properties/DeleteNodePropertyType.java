@@ -1,4 +1,4 @@
-package com.rage.properties;
+package com.rage.schema.properties;
 
 import com.rage.BaseTest;
 import org.junit.jupiter.api.Test;

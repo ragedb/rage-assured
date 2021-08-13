@@ -1,4 +1,4 @@
-package com.rage.schema;
+package com.rage.schema.relationships;
 
 import com.rage.BaseTest;
 import org.junit.jupiter.api.Test;
@@ -6,28 +6,28 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
-public class GetNodeType extends BaseTest {
+public class GetRelationshipType extends BaseTest {
 
     @Test
-    public void requestNodeTypeFromEmptyGraph() {
+    public void requestRelationshipTypeFromEmptyGraph() {
 
         given().
                 spec(requestSpec).
         when().
-                get("/db/rage/schema/nodes/User").
+                get("/db/rage/schema/relationships/LOVES").
         then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("$", not(hasItem("name")));
+                body("$", not(hasItem("weight")));
     }
 
     @Test
-    public void requestEmptyNodeTypesFromSingleNodeTypeGraph() {
+    public void requestEmptyRelationshipTypesFromSingleRelationshipTypeGraph() {
         given().
                 spec(requestSpec).
         when().
-                post("/db/rage/schema/nodes/User").
+                post("/db/rage/schema/relationships/LOVES").
         then().
                 assertThat().
                 statusCode(201);
@@ -35,35 +35,27 @@ public class GetNodeType extends BaseTest {
         given().
                 spec(requestSpec).
         when().
-                get("/db/rage/schema/nodes/User").
+                get("/db/rage/schema/relationships/LOVES").
         then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("", not(hasItem("name")));
+                body("", not(hasItem("weight")));
     }
 
     @Test
-    public void requestNonEmptyNodeTypeFromSingleNodeTypeGraph() {
+    public void requestNonEmptyRelationshipTypeFromSingleRelationshipTypeGraph() {
         given().
                 spec(requestSpec).
         when().
-                post("/db/rage/schema/nodes/User").
+                post("/db/rage/schema/relationships/LOVES").
         then().
                 assertThat().
                 statusCode(201);
         given().
                 spec(requestSpec).
         when().
-                post("/db/rage/schema/nodes/User/properties/name/string").
-        then().
-                assertThat().
-                statusCode(201);
-
-        given().
-                spec(requestSpec).
-        when().
-                post("/db/rage/schema/nodes/User/properties/age/integer").
+                post("/db/rage/schema/relationships/LOVES/properties/weight/double").
         then().
                 assertThat().
                 statusCode(201);
@@ -71,12 +63,20 @@ public class GetNodeType extends BaseTest {
         given().
                 spec(requestSpec).
         when().
-                get("/db/rage/schema/nodes/User").
+                post("/db/rage/schema/relationships/LOVES/properties/valid/boolean").
+        then().
+                assertThat().
+                statusCode(201);
+
+        given().
+                spec(requestSpec).
+        when().
+                get("/db/rage/schema/relationships/LOVES").
         then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("age", is("integer")).
-                body("name", is("string"));
+                body("valid", is("boolean")).
+                body("weight", is("double"));
     }
 }

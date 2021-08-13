@@ -1,4 +1,4 @@
-package com.rage.properties;
+package com.rage.schema.properties;
 
 import com.rage.BaseTest;
 import org.junit.jupiter.api.Test;
@@ -7,29 +7,21 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-public class CreateNodePropertyType extends BaseTest {
+public class GetRelationshipPropertyType extends BaseTest {
 
     @Test
-    public void CreateNodePropertyTypeOnEmptyGraph() {
+    public void GetRelationshipPropertyTypeOnEmptyGraph() {
         given().
                 spec(requestSpec).
                 when().
-                post("/db/rage/schema/nodes/User").
+                post("/db/rage/schema/relationships/LOVES").
                 then().
                 assertThat().
                 statusCode(201);
         given().
                 spec(requestSpec).
                 when().
-                post("/db/rage/schema/nodes/User/properties/name/string").
-                then().
-                assertThat().
-                statusCode(201);
-
-        given().
-                spec(requestSpec).
-                when().
-                post("/db/rage/schema/nodes/User/properties/age/integer").
+                post("/db/rage/schema/relationships/LOVES/properties/weight/double").
                 then().
                 assertThat().
                 statusCode(201);
@@ -37,12 +29,19 @@ public class CreateNodePropertyType extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                get("/db/rage/schema/nodes/User").
+                post("/db/rage/schema/relationships/LOVES/properties/valid/boolean").
+                then().
+                assertThat().
+                statusCode(201);
+
+        given().
+                spec(requestSpec).
+                when().
+                get("/db/rage/schema/relationships/LOVES/properties/weight").
                 then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("age", is("integer")).
-                body("name", is("string"));
+                body("weight", is("double"));
     }
 }

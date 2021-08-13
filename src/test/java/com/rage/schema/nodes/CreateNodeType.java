@@ -1,4 +1,4 @@
-package com.rage.schema;
+package com.rage.schema.nodes;
 
 import com.rage.BaseTest;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.rage.schema;
+package com.rage.schema.relationships;
 
 import com.rage.BaseTest;
 import org.junit.jupiter.api.Test;
@@ -6,15 +6,15 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
-public class GetNodeTypes extends BaseTest {
+public class GetRelationshipTypes extends BaseTest {
 
     @Test
-    public void requestNodeTypesFromEmptyGraph() {
+    public void requestRelationshipTypesFromEmptyGraph() {
 
         given().
                 spec(requestSpec).
         when().
-                get("/db/rage/schema/nodes").
+                get("/db/rage/schema/relationships").
         then().
                 assertThat().
                 statusCode(200).
@@ -24,11 +24,11 @@ public class GetNodeTypes extends BaseTest {
     }
 
     @Test
-    public void requestNodeTypesFromSingleNodeTypeGraph() {
+    public void requestRelationshipTypesFromSingleRelationshipTypeGraph() {
         given().
                 spec(requestSpec).
         when().
-                post("/db/rage/schema/nodes/User").
+                post("/db/rage/schema/relationships/LOVES").
         then().
                 assertThat().
                 statusCode(201);
@@ -36,27 +36,27 @@ public class GetNodeTypes extends BaseTest {
         given().
                 spec(requestSpec).
         when().
-                get("/db/rage/schema/nodes").
+                get("/db/rage/schema/relationships").
         then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("", hasItem("User"));
+                body("", hasItem("LOVES"));
     }
 
     @Test
-    public void requestNodeTypesFromMultipleNodeTypeGraph() {
+    public void requestRelationshipTypesFromMultipleRelationshipTypeGraph() {
         given().
                 spec(requestSpec).
                 when().
-                post("/db/rage/schema/nodes/User").
+                post("/db/rage/schema/relationships/LOVES").
                 then().
                 assertThat().
                 statusCode(201);
         given().
                 spec(requestSpec).
                 when().
-                post("/db/rage/schema/nodes/Person").
+                post("/db/rage/schema/relationships/LIKES").
                 then().
                 assertThat().
                 statusCode(201);
@@ -64,12 +64,12 @@ public class GetNodeTypes extends BaseTest {
         given().
                 spec(requestSpec).
         when().
-                get("/db/rage/schema/nodes").
+                get("/db/rage/schema/relationships").
         then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("", hasItem("User")).
-                body("", hasItem("Person"));
+                body("", hasItem("LOVES")).
+                body("", hasItem("LIKES"));
     }
 }
