@@ -5,12 +5,13 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
-public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
+public class GetThePropertyOfANodeById extends BaseTest {
     
     @Test
-    public void SetThePropertiesOfANodeByTypeAndKeyOnEmptyGraph() {
+    public void GetThePropertyOfANodeByIdOnEmptyGraph() {
         given().
                 spec(requestSpec).
                 when().
@@ -37,14 +38,6 @@ public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                post("/db/rage/schema/nodes/User/properties/awesome/boolean").
-                then().
-                assertThat().
-                statusCode(201);
-
-        given().
-                spec(requestSpec).
-                when().
                 post("/db/rage/schema/nodes/Person").
                 then().
                 assertThat().
@@ -61,14 +54,6 @@ public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
                 spec(requestSpec).
                 when().
                 post("/db/rage/schema/nodes/Person/properties/age/integer").
-                then().
-                assertThat().
-                statusCode(201);
-
-        given().
-                spec(requestSpec).
-                when().
-                post("/db/rage/schema/nodes/Person/properties/awesome/boolean").
                 then().
                 assertThat().
                 statusCode(201);
@@ -106,65 +91,21 @@ public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                get("/db/rage/node/Person/Helene/properties").
+                get("/db/rage/node/2050/property/name").
                 then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("age", is(41)).
                 body("name", is("helene"));
 
         given().
                 spec(requestSpec).
                 when().
-                get("/db/rage/node/User/Max/properties").
+                get("/db/rage/node/1027/property/name").
                 then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("age", is(42)).
                 body("name", is("max"));
-
-        given().
-                spec(requestSpec).
-                when().
-                body("{ \"awesome\" : true }").with().contentType(ContentType.JSON).
-                put("/db/rage/node/User/Max/properties").
-                then().
-                assertThat().
-                statusCode(204);
-
-        given().
-                spec(requestSpec).
-                when().
-                body("{ \"awesome\" : true }").with().contentType(ContentType.JSON).
-                put("/db/rage/node/Person/Helene/properties").
-                then().
-                assertThat().
-                statusCode(204);
-
-        given().
-                spec(requestSpec).
-                when().
-                get("/db/rage/node/Person/Helene/properties").
-                then().
-                assertThat().
-                statusCode(200).
-                contentType(equalTo("application/json")).
-                body("awesome", is(true)).
-                body("age", is(41)).
-                body("name", is("helene"));
-
-        given().
-                spec(requestSpec).
-                when().
-                get("/db/rage/node/User/Max/properties").
-                then().
-                assertThat().
-                statusCode(200).
-                contentType(equalTo("application/json")).
-                body("awesome", is(true)).
-                body("age", is(42)).
-                body("name", is("max"));;
     }
 }

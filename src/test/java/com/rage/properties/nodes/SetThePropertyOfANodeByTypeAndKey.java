@@ -5,12 +5,13 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
-public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
+public class SetThePropertyOfANodeByTypeAndKey extends BaseTest {
     
     @Test
-    public void SetThePropertiesOfANodeByTypeAndKeyOnEmptyGraph() {
+    public void SetThePropertyOfANodeByTypeAndKeyOnEmptyGraph() {
         given().
                 spec(requestSpec).
                 when().
@@ -30,14 +31,6 @@ public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
                 spec(requestSpec).
                 when().
                 post("/db/rage/schema/nodes/User/properties/age/integer").
-                then().
-                assertThat().
-                statusCode(201);
-
-        given().
-                spec(requestSpec).
-                when().
-                post("/db/rage/schema/nodes/User/properties/awesome/boolean").
                 then().
                 assertThat().
                 statusCode(201);
@@ -68,21 +61,12 @@ public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                post("/db/rage/schema/nodes/Person/properties/awesome/boolean").
-                then().
-                assertThat().
-                statusCode(201);
-
-        given().
-                spec(requestSpec).
-                when().
                 body("{ \"name\" : \"max\", \"age\" : 42 }").with().contentType(ContentType.JSON).
                 post("/db/rage/node/User/Max").
                 then().
                 assertThat().
                 statusCode(201).
                 contentType(equalTo("application/json")).
-                body("id", is(1027)).
                 body("type", is("User")).
                 body("key", is("Max")).
                 body("properties.age", is(42)).
@@ -97,7 +81,6 @@ public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
                 assertThat().
                 statusCode(201).
                 contentType(equalTo("application/json")).
-                body("id", is(2050)).
                 body("type", is("Person")).
                 body("key", is("Helene")).
                 body("properties.age", is(41)).
@@ -106,30 +89,8 @@ public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                get("/db/rage/node/Person/Helene/properties").
-                then().
-                assertThat().
-                statusCode(200).
-                contentType(equalTo("application/json")).
-                body("age", is(41)).
-                body("name", is("helene"));
-
-        given().
-                spec(requestSpec).
-                when().
-                get("/db/rage/node/User/Max/properties").
-                then().
-                assertThat().
-                statusCode(200).
-                contentType(equalTo("application/json")).
-                body("age", is(42)).
-                body("name", is("max"));
-
-        given().
-                spec(requestSpec).
-                when().
-                body("{ \"awesome\" : true }").with().contentType(ContentType.JSON).
-                put("/db/rage/node/User/Max/properties").
+                body("\"roger\"").with().contentType(ContentType.JSON).
+                put("/db/rage/node/User/Max/property/name").
                 then().
                 assertThat().
                 statusCode(204);
@@ -137,8 +98,8 @@ public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                body("{ \"awesome\" : true }").with().contentType(ContentType.JSON).
-                put("/db/rage/node/Person/Helene/properties").
+                body("\"laura\"").with().contentType(ContentType.JSON).
+                put("/db/rage/node/Person/Helene/property/name").
                 then().
                 assertThat().
                 statusCode(204);
@@ -146,25 +107,27 @@ public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                get("/db/rage/node/Person/Helene/properties").
+                get("/db/rage/node/Person/Helene").
                 then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("awesome", is(true)).
-                body("age", is(41)).
-                body("name", is("helene"));
+                body("type", is("Person")).
+                body("key", is("Helene")).
+                body("properties.age", is(41)).
+                body("properties.name", is("laura"));
 
         given().
                 spec(requestSpec).
                 when().
-                get("/db/rage/node/User/Max/properties").
+                get("/db/rage/node/User/Max").
                 then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("awesome", is(true)).
-                body("age", is(42)).
-                body("name", is("max"));;
+                body("type", is("User")).
+                body("key", is("Max")).
+                body("properties.age", is(42)).
+                body("properties.name", is("roger"));
     }
 }

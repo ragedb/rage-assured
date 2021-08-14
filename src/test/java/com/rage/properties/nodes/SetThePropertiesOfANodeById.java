@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.*;
 public class SetThePropertiesOfANodeById extends BaseTest {
     
     @Test
-    public void ResetThePropertiesOfANodeByIdOnEmptyGraph() {
+    public void SetThePropertiesOfANodeByIdOnEmptyGraph() {
         given().
                 spec(requestSpec).
                 when().

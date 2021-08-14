@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
-public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
+public class DeleteThePropertiesOfANodeByTypeAndKey extends BaseTest {
     
     @Test
-    public void SetThePropertiesOfANodeByTypeAndKeyOnEmptyGraph() {
+    public void DeleteThePropertiesOfANodeByTypeAndKeyOnEmptyGraph() {
         given().
                 spec(requestSpec).
                 when().
@@ -129,7 +129,7 @@ public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
                 spec(requestSpec).
                 when().
                 body("{ \"awesome\" : true }").with().contentType(ContentType.JSON).
-                put("/db/rage/node/User/Max/properties").
+                post("/db/rage/node/User/Max/properties").
                 then().
                 assertThat().
                 statusCode(204);
@@ -138,7 +138,7 @@ public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
                 spec(requestSpec).
                 when().
                 body("{ \"awesome\" : true }").with().contentType(ContentType.JSON).
-                put("/db/rage/node/Person/Helene/properties").
+                post("/db/rage/node/Person/Helene/properties").
                 then().
                 assertThat().
                 statusCode(204);
@@ -152,8 +152,8 @@ public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
                 statusCode(200).
                 contentType(equalTo("application/json")).
                 body("awesome", is(true)).
-                body("age", is(41)).
-                body("name", is("helene"));
+                body("age", nullValue()).
+                body("name", nullValue());
 
         given().
                 spec(requestSpec).
@@ -164,7 +164,7 @@ public class SetThePropertiesOfANodeByTypeAndKey extends BaseTest {
                 statusCode(200).
                 contentType(equalTo("application/json")).
                 body("awesome", is(true)).
-                body("age", is(42)).
-                body("name", is("max"));;
+                body("age", nullValue()).
+                body("name", nullValue());
     }
 }

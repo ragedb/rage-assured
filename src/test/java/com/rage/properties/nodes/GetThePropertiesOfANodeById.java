@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.is;
 public class GetThePropertiesOfANodeById extends BaseTest {
     
     @Test
-    public void GetANodeByIdOnEmptyGraph() {
+    public void GetThePropertyOfANodeByIdOnEmptyGraph() {
         given().
                 spec(requestSpec).
                 when().
