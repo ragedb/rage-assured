@@ -19,6 +19,7 @@ public class CreateANode extends BaseTest {
                 then().
                 assertThat().
                 statusCode(201);
+
         given().
                 spec(requestSpec).
                 when().
