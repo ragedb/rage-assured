@@ -17,17 +17,17 @@
 package com.rage.nodes;
 
 import com.rage.BaseTest;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
-import io.restassured.http.ContentType;
-
-public class GetAllNodes extends BaseTest {
-
+public class FindNodesOfAType extends BaseTest {
+    
     @Test
-    public void GetAllNodesOnEmptyGraph() {
+    public void FindNodesOfATypeOnEmptyGraph() {
         given().
                 spec(requestSpec).
                 when().
@@ -54,14 +54,14 @@ public class GetAllNodes extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                post("/db/rage/schema/nodes/Dog").
+                post("/db/rage/schema/nodes/Person").
                 then().
                 assertThat().
                 statusCode(201);
         given().
                 spec(requestSpec).
                 when().
-                post("/db/rage/schema/nodes/Dog/properties/name/string").
+                post("/db/rage/schema/nodes/Person/properties/name/string").
                 then().
                 assertThat().
                 statusCode(201);
@@ -69,7 +69,7 @@ public class GetAllNodes extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                post("/db/rage/schema/nodes/Dog/properties/age/integer").
+                post("/db/rage/schema/nodes/Person/properties/age/integer").
                 then().
                 assertThat().
                 statusCode(201);
@@ -142,12 +142,12 @@ public class GetAllNodes extends BaseTest {
                 spec(requestSpec).
                 when().
                 body("{ \"name\" : \"penny\", \"age\" : 2 }").with().contentType(ContentType.JSON).
-                post("/db/rage/node/Dog/Penny").
+                post("/db/rage/node/User/Penny").
                 then().
                 assertThat().
                 statusCode(201).
                 contentType(equalTo("application/json")).
-                body("type", is("Dog")).
+                body("type", is("User")).
                 body("key", is("Penny")).
                 body("properties.age", is(2)).
                 body("properties.name", is("penny"));
@@ -155,55 +155,25 @@ public class GetAllNodes extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                body("{ \"name\" : \"tyler\", \"age\" : 6 }").with().contentType(ContentType.JSON).
-                post("/db/rage/node/Dog/Tyler").
+                delete("/db/rage/node/User/Penny/property/age").
                 then().
                 assertThat().
-                statusCode(201).
-                contentType(equalTo("application/json")).
-                body("type", is("Dog")).
-                body("key", is("Tyler")).
-                body("properties.age", is(6)).
-                body("properties.name", is("tyler"));
+                statusCode(204);
 
         given().
                 spec(requestSpec).
                 when().
-                body("{ \"name\" : \"ronnie\", \"age\" : 6 }").with().contentType(ContentType.JSON).
-                post("/db/rage/node/Dog/Ronnie").
-                then().
-                assertThat().
-                statusCode(201).
-                contentType(equalTo("application/json")).
-                body("type", is("Dog")).
-                body("key", is("Ronnie")).
-                body("properties.age", is(6)).
-                body("properties.name", is("ronnie"));
-
-        given().
-                spec(requestSpec).
-                when().
-                get("/db/rage/nodes").
+                post("/db/rage/nodes/User/age/IS_NULL").
                 then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("size()", equalTo(6));
+                body("size()", equalTo(1));
 
         given().
                 spec(requestSpec).
                 when().
-                get("/db/rage/nodes?skip=2").
-                then().
-                assertThat().
-                statusCode(200).
-                contentType(equalTo("application/json")).
-                body("size()", equalTo(4));
-
-        given().
-                spec(requestSpec).
-                when().
-                get("/db/rage/nodes?skip=3").
+                post("/db/rage/nodes/User/age/NOT_IS_NULL").
                 then().
                 assertThat().
                 statusCode(200).
@@ -213,21 +183,92 @@ public class GetAllNodes extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                get("/db/rage/nodes?skip=6").
+                body("41").with().contentType(ContentType.JSON).
+                post("/db/rage/nodes/User/age/EQ").
                 then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("size()", equalTo(0));
+                body("size()", equalTo(2)).
+                body("[0].type", is("User")).
+                body("[0].key", is("Gabi")).
+                body("[0].properties.age", is(41)).
+                body("[0].properties.name", is("gabi")).
+                body("[1].type", is("User")).
+                body("[1].key", is("Alex")).
+                body("[1].properties.age", is(41)).
+                body("[1].properties.name", is("alex"));
 
         given().
                 spec(requestSpec).
                 when().
-                get("/db/rage/nodes?skip=99").
+                body("42").with().contentType(ContentType.JSON).
+                post("/db/rage/nodes/User/age/EQ").
                 then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("size()", equalTo(0));
+                body("size()", equalTo(1)).
+                body("[0].type", is("User")).
+                body("[0].key", is("Max")).
+                body("[0].properties.age", is(42)).
+                body("[0].properties.name", is("max"));
+
+        given().
+                spec(requestSpec).
+                when().
+                body("41").with().contentType(ContentType.JSON).
+                post("/db/rage/nodes/User/age/GT").
+                then().
+                assertThat().
+                statusCode(200).
+                contentType(equalTo("application/json")).
+                body("size()", equalTo(1));
+
+        given().
+                spec(requestSpec).
+                when().
+                body("41").with().contentType(ContentType.JSON).
+                post("/db/rage/nodes/User/age/GTE").
+                then().
+                assertThat().
+                statusCode(200).
+                contentType(equalTo("application/json")).
+                body("size()", equalTo(3));
+
+        given().
+                spec(requestSpec).
+                when().
+                body("42").with().contentType(ContentType.JSON).
+                post("/db/rage/nodes/User/age/LT").
+                then().
+                assertThat().
+                statusCode(200).
+                contentType(equalTo("application/json")).
+                body("size()", equalTo(2));
+
+        given().
+                spec(requestSpec).
+                when().
+                body("42").with().contentType(ContentType.JSON).
+                post("/db/rage/nodes/User/age/LTE").
+                then().
+                assertThat().
+                statusCode(200).
+                contentType(equalTo("application/json")).
+                body("size()", equalTo(3));
+
+        given().
+                spec(requestSpec).
+                when().
+                body("42").with().contentType(ContentType.JSON).
+                post("/db/rage/nodes/User/age/NEQ").
+                then().
+                assertThat().
+                statusCode(200).
+                contentType(equalTo("application/json")).
+                body("size()", equalTo(2));
+
+
     }
 }

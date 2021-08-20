@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.rage.nodes;
+package com.rage.properties.nodes;
 
 import com.rage.BaseTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
-public class GetAllNodesOfAType extends BaseTest {
+public class DeleteThePropertyOfANodeByTypeAndKey extends BaseTest {
     
     @Test
-    public void GetAllNodesOfATypeOnEmptyGraph() {
+    public void DeleteThePropertyOfANodeByTypeAndKeyOnEmptyGraph() {
         given().
                 spec(requestSpec).
                 when().
@@ -54,14 +53,7 @@ public class GetAllNodesOfAType extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                post("/db/rage/schema/nodes/Dog").
-                then().
-                assertThat().
-                statusCode(201);
-        given().
-                spec(requestSpec).
-                when().
-                post("/db/rage/schema/nodes/Dog/properties/name/string").
+                post("/db/rage/schema/nodes/User/properties/awesome/boolean").
                 then().
                 assertThat().
                 statusCode(201);
@@ -69,7 +61,30 @@ public class GetAllNodesOfAType extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                post("/db/rage/schema/nodes/Dog/properties/age/integer").
+                post("/db/rage/schema/nodes/Person").
+                then().
+                assertThat().
+                statusCode(201);
+        given().
+                spec(requestSpec).
+                when().
+                post("/db/rage/schema/nodes/Person/properties/name/string").
+                then().
+                assertThat().
+                statusCode(201);
+
+        given().
+                spec(requestSpec).
+                when().
+                post("/db/rage/schema/nodes/Person/properties/age/integer").
+                then().
+                assertThat().
+                statusCode(201);
+
+        given().
+                spec(requestSpec).
+                when().
+                post("/db/rage/schema/nodes/Person/properties/awesome/boolean").
                 then().
                 assertThat().
                 statusCode(201);
@@ -83,6 +98,7 @@ public class GetAllNodesOfAType extends BaseTest {
                 assertThat().
                 statusCode(201).
                 contentType(equalTo("application/json")).
+                body("id", is(1027)).
                 body("type", is("User")).
                 body("key", is("Max")).
                 body("properties.age", is(42)).
@@ -92,12 +108,13 @@ public class GetAllNodesOfAType extends BaseTest {
                 spec(requestSpec).
                 when().
                 body("{ \"name\" : \"helene\", \"age\" : 41 }").with().contentType(ContentType.JSON).
-                post("/db/rage/node/User/Helene").
+                post("/db/rage/node/Person/Helene").
                 then().
                 assertThat().
                 statusCode(201).
                 contentType(equalTo("application/json")).
-                body("type", is("User")).
+                body("id", is(2050)).
+                body("type", is("Person")).
                 body("key", is("Helene")).
                 body("properties.age", is(41)).
                 body("properties.name", is("helene"));
@@ -105,7 +122,29 @@ public class GetAllNodesOfAType extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                delete("/db/rage/node/User/Helene").
+                get("/db/rage/node/Person/Helene/properties").
+                then().
+                assertThat().
+                statusCode(200).
+                contentType(equalTo("application/json")).
+                body("age", is(41)).
+                body("name", is("helene"));
+
+        given().
+                spec(requestSpec).
+                when().
+                get("/db/rage/node/User/Max/properties").
+                then().
+                assertThat().
+                statusCode(200).
+                contentType(equalTo("application/json")).
+                body("age", is(42)).
+                body("name", is("max"));
+
+        given().
+                spec(requestSpec).
+                when().
+                delete("/db/rage/node/User/Max/property/name").
                 then().
                 assertThat().
                 statusCode(204);
@@ -113,91 +152,31 @@ public class GetAllNodesOfAType extends BaseTest {
         given().
                 spec(requestSpec).
                 when().
-                body("{ \"name\" : \"alex\", \"age\" : 41 }").with().contentType(ContentType.JSON).
-                post("/db/rage/node/User/Alex").
+                delete("/db/rage/node/Person/Helene/property/name").
                 then().
                 assertThat().
-                statusCode(201).
-                contentType(equalTo("application/json")).
-                body("type", is("User")).
-                body("key", is("Alex")).
-                body("properties.age", is(41)).
-                body("properties.name", is("alex"));
+                statusCode(204);
 
         given().
                 spec(requestSpec).
                 when().
-                body("{ \"name\" : \"gabi\", \"age\" : 41 }").with().contentType(ContentType.JSON).
-                post("/db/rage/node/User/Gabi").
-                then().
-                assertThat().
-                statusCode(201).
-                contentType(equalTo("application/json")).
-                body("type", is("User")).
-                body("key", is("Gabi")).
-                body("properties.age", is(41)).
-                body("properties.name", is("gabi"));
-
-        given().
-                spec(requestSpec).
-                when().
-                body("{ \"name\" : \"penny\", \"age\" : 2 }").with().contentType(ContentType.JSON).
-                post("/db/rage/node/Dog/Penny").
-                then().
-                assertThat().
-                statusCode(201).
-                contentType(equalTo("application/json")).
-                body("type", is("Dog")).
-                body("key", is("Penny")).
-                body("properties.age", is(2)).
-                body("properties.name", is("penny"));
-
-        given().
-                spec(requestSpec).
-                when().
-                body("{ \"name\" : \"tyler\", \"age\" : 6 }").with().contentType(ContentType.JSON).
-                post("/db/rage/node/Dog/Tyler").
-                then().
-                assertThat().
-                statusCode(201).
-                contentType(equalTo("application/json")).
-                body("type", is("Dog")).
-                body("key", is("Tyler")).
-                body("properties.age", is(6)).
-                body("properties.name", is("tyler"));
-
-        given().
-                spec(requestSpec).
-                when().
-                body("{ \"name\" : \"ronnie\", \"age\" : 6 }").with().contentType(ContentType.JSON).
-                post("/db/rage/node/Dog/Ronnie").
-                then().
-                assertThat().
-                statusCode(201).
-                contentType(equalTo("application/json")).
-                body("type", is("Dog")).
-                body("key", is("Ronnie")).
-                body("properties.age", is(6)).
-                body("properties.name", is("ronnie"));
-
-        given().
-                spec(requestSpec).
-                when().
-                get("/db/rage/nodes/User").
+                get("/db/rage/node/Person/Helene/properties").
                 then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("size()", equalTo(3));
+                body("age", is(41)).
+                body("name", nullValue());
 
         given().
                 spec(requestSpec).
                 when().
-                get("/db/rage/nodes/Dog").
+                get("/db/rage/node/User/Max/properties").
                 then().
                 assertThat().
                 statusCode(200).
                 contentType(equalTo("application/json")).
-                body("size()", equalTo(3));
+                body("age", is(42)).
+                body("name", nullValue());
     }
 }
