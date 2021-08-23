@@ -269,6 +269,15 @@ public class FindNodesOfAType extends BaseTest {
                 contentType(equalTo("application/json")).
                 body("size()", equalTo(2));
 
-
+        given().
+                spec(requestSpec).
+                when().
+                body("1").with().contentType(ContentType.JSON).
+                post("/db/rage/nodes/User/age/GTE?limit=1&skip=2").
+                then().
+                assertThat().
+                statusCode(200).
+                contentType(equalTo("application/json")).
+                body("size()", equalTo(1));
     }
 }
